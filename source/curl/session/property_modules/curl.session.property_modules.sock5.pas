@@ -24,7 +24,7 @@
 (*                                                                            *)
 (******************************************************************************)
 
-unit curl.http.session.property_modules.header;
+unit curl.session.property_modules.sock5;
 
 {$IFDEF FPC}
   {$mode objfpc}{$H+}
@@ -36,15 +36,59 @@ unit curl.http.session.property_modules.header;
 interface
 
 uses
-  curl.session.property_modules.header;
+  libpascurl, curl.session.property_module, curl.session.sock5_authmethod;
 
 type
-  TModuleHeader = class(curl.session.property_modules.header.TModuleHeader)
-  public
-    { Set callback that receives header data. }
-    property HeaderCallback;   
+  TModuleSock5 = class(TPropertyModule)
+  protected
+    { Set allowed methods for SOCKS5 proxy authentication. }
+    procedure SetAuthType (AType : TSock5Auth);
+
+    { Proxy authentication service name. }
+    procedure SetGSSAPIService (AName : String);
+
+    { Set socks proxy gssapi negotiation protection. }
+    procedure SetGSSAPIProtection (AEnable : Boolean);
+  protected
+    { Tell libcurl which authentication method(s) are allowed for SOCKS5 
+      proxy authentication. }
+    property AuthType : TSock5Auth write SetAuthType;
+
+    { Proxy authentication service name. }
+    property GSSAPIServiceName : String write SetGSSAPIService 
+      default 'rcmd';
+
+    { As part of the gssapi negotiation a protection mode is negotiated. 
+      The RFC 1961 says in section 4.3/4.4 it should be protected, but the 
+      NEC reference implementation does not. If enabled, this option allows 
+      the unprotected exchange of the protection mode negotiation. }
+    property GSSAPIProtection : Boolean write SetGSSAPIProtection;
   end;
 
 implementation
+
+{ TModuleSock5 }
+
+procedure TModuleSock5.SetAuthType (AType : TSock5Auth);
+var
+  bitmask : Longint = 0;
+begin
+  if AUTH_BASIC in AType then
+    bitmask := bitmask or CURLAUTH_BASIC;
+  if AUTH_GSSAPI in AType then
+    bitmask := bitmask or CURLAUTH_GSSAPI;
+
+  Option(CURLOPT_SOCKS5_AUTH, bitmask);
+end;
+
+procedure TModuleSock5.SetGSSAPIService (AName : String);
+begin
+  Option(CURLOPT_SOCKS5_GSSAPI_SERVICE, AName);
+end;
+
+procedure TModuleSock5.SetGSSAPIProtection (AEnable : Boolean);
+begin
+  Option(CURLOPT_SOCKS5_GSSAPI_NEC, AEnable);
+end;
 
 end.

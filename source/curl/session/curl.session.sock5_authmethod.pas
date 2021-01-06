@@ -24,7 +24,7 @@
 (*                                                                            *)
 (******************************************************************************)
 
-unit curl.http.session.property_modules.header;
+unit curl.session.sock5_authmethod;
 
 {$IFDEF FPC}
   {$mode objfpc}{$H+}
@@ -35,16 +35,17 @@ unit curl.http.session.property_modules.header;
 
 interface
 
-uses
-  curl.session.property_modules.header;
-
 type
-  TModuleHeader = class(curl.session.property_modules.header.TModuleHeader)
-  public
-    { Set callback that receives header data. }
-    property HeaderCallback;   
-  end;
+  TSock5AuthType = (
+    { No authentication. }
+    AUTH_NONE,    
 
-implementation
+    { Username/password authentication. }
+    AUTH_BASIC,
 
-end.
+    { Allows GSS-API authentication. }
+    AUTH_GSSAPI
+  );
+
+  TSock5Auth = set of TSock5AuthType;
+  

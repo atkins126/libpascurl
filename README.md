@@ -1,9 +1,7 @@
 libPasCURL
 ==========
-It is object pascal bindings and wrapper around [cURL library](https://curl.haxx.se/). libcurl is the library is using for transferring data specified with URL syntax,
+It is delphi and object pascal bindings and wrapper around [cURL library](https://curl.haxx.se/). libcurl is the library is using for transferring data specified with URL syntax,
 supporting HTTP, HTTPS, FTP, FTPS, GOPHER, TFTP, SCP, SFTP, SMB, TELNET, DICT, LDAP, LDAPS, FILE, IMAP, SMTP, POP3, RTSP and RTMP.
-
-Documentation you can find at [wiki page](https://github.com/isemenkov/libpascurl/wiki).
 
 
 
@@ -12,7 +10,6 @@ Documentation you can find at [wiki page](https://github.com/isemenkov/libpascur
 * [Requierements](#requirements)
 * [Installation](#installation)
 * [Usage](#usage)
-* [Testing](#testing)
 * [Examples](#examples)
 * [Bindings](#bindings)
   * [Usage example](#usage-example)
@@ -30,16 +27,22 @@ Documentation you can find at [wiki page](https://github.com/isemenkov/libpascur
 
 ### Requirements
 
+* [Embarcadero (R) Rad Studio](https://www.embarcadero.com)
 * [Free Pascal Compiler](http://freepascal.org)
 * [Lazarus IDE](http://www.lazarus.freepascal.org/) (optional)
 
-Library is tested with latest stable FreePascal Compiler (currently 3.2.0) and Lazarus IDE (currently 2.0.10).
+
+
+Library is tested for 
+
+- Embarcadero (R) Delphi 10.3 on Windows 7 Service Pack 1 (Version 6.1, Build 7601, 64-bit Edition)
+- FreePascal Compiler (3.2.0) and Lazarus IDE (2.0.10) on Ubuntu Linux 5.8.0-33-generic x86_64
 
 
 
 ### Installation
 
-Get the sources and add the *source* directory to the *fpc.cfg* file.
+Get the sources and add the *source* directory to the project search path. For FPC add the *source* directory to the *fpc.cfg* file.
 
 
 
@@ -48,14 +51,6 @@ Get the sources and add the *source* directory to the *fpc.cfg* file.
 Clone the repository `git clone https://github.com/isemenkov/libpascurl`.
 
 Add the unit you want to use to the `uses` clause.
-
-
-
-### Testing
-
-A testing framework consists of the following ingredients:
-1. Test runner project located in `unit-tests` directory.
-2. Test cases (FPCUnit based) for additional helpers classes.  
 
 
 
@@ -153,8 +148,11 @@ Module class | Description
 [TModuleSocket](https://github.com/isemenkov/libpascurl/blob/master/source/curl/session/property_modules/curl.session.property_modules.socket.pas)| Class provide properties to socket setup. 
 [TModuleTCP](https://github.com/isemenkov/libpascurl/blob/master/source/curl/session/property_modules/curl.session.property_modules.tcp.pas)| Class provide properties to setup TCP protocol options. 
 [TModuleWriter](https://github.com/isemenkov/libpascurl/blob/master/source/curl/session/property_modules/curl.session.property_modules.writer.pas)| Class provide properties to setup download callback function. 
+[TModuleReader](https://github.com/isemenkov/libpascurl/blob/master/source/curl/session/property_modules/curl.session.property_modules.reader.pas)| Class provide properties to setup upload callback function.
 [TModuleAuth](https://github.com/isemenkov/libpascurl/blob/master/source/curl/session/property_modules/curl.session.property_modules.auth.pas)| Class provide properties to setup auth options.  
 [TModuleTLSAuth](https://github.com/isemenkov/libpascurl/blob/master/source/curl/session/property_modules/curl.session.property_modules.tls_auth.pas)| Class provide properties to setup TLS auth authentication options.  
+[TModuleProxy](https://github.com/isemenkov/libpascurl/blob/master/source/curl/session/property_modules/curl.session.property_modules.proxy.pas)| Class provide properties to setup proxy options. 
+[TModuleSock5](https://github.com/isemenkov/libpascurl/blob/master/source/curl/session/property_modules/curl.session.property_modules.sock5.pas)| Class provide properties to setup sock5 proxy options.
 
 ##### Response modules
 
@@ -165,6 +163,7 @@ Module class | Description
 [TModuleRedirect](https://github.com/isemenkov/libpascurl/blob/master/source/curl/response/property_modules/curl.response.property_modules.redirect.pas)| Class provide information about request redirects. 
 [TModuleSpeed](https://github.com/isemenkov/libpascurl/blob/master/source/curl/response/property_modules/curl.response.property_modules.speed.pas)| Class provide speed download/upload information. 
 [TModuleTimeout](https://github.com/isemenkov/libpascurl/blob/master/source/curl/response/property_modules/curl.response.property_modules.timeout.pas)| Class provide timeouts information. 
+[TModuleInfo](https://github.com/isemenkov/libpascurl/blob/master/source/curl/response/property_modules/curl.response.property_modules.info.pas)| Class provide session information. 
 
 #### HTTP
 
@@ -178,17 +177,22 @@ Session modules | Response modules
 :heavy_check_mark: TModuleOptions | :heavy_check_mark: TModuleRedirect
 :heavy_check_mark: TModuleProtocols | :heavy_check_mark: TModuleSpeed
 :heavy_check_mark: TModuleSocket | :heavy_check_mark: TModuleTimeout
-:heavy_check_mark: TModuleTCP |  
+:heavy_check_mark: TModuleTCP | :heavy_check_mark: TModuleInfo 
 :heavy_check_mark: TModuleWriter |
+:heavy_check_mark: TModuleReader |
 :heavy_check_mark: TModuleRequest |
 :heavy_check_mark: TModuleAuth |
 :heavy_check_mark: TModuleTLSAuth |
+:heavy_check_mark: TModuleProxy |
+:heavy_check_mark: TModuleSock5 |
 
 ##### Session modules
 
 Module class | Description
 -------------|------------
 [TModuleRedirect](https://github.com/isemenkov/libpascurl/blob/master/source/http/session/property_modules/curl.http.session.property_modules.redirect.pas)| Class provide properties to setup http(s) redirect options.
+[TModuleHTTP2](https://github.com/isemenkov/libpascurl/blob/master/source/http/session/property_modules/curl.http.session.property_modules.http2.pas)| Class provide properties to setup HTTP/2 protocol options.
+[TModuleTimeout](https://github.com/isemenkov/libpascurl/blob/master/source/http/session/property_modules/curl.http.session.property_modules.timeout.pas)| Class provide properties to setup http(s) protocol timeouts options.
 
 ##### Response modules
 

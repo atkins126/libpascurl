@@ -24,7 +24,7 @@
 (*                                                                            *)
 (******************************************************************************)
 
-unit curl.http.session.property_modules.header;
+unit curl.http.session.property_modules.proxy;
 
 {$IFDEF FPC}
   {$mode objfpc}{$H+}
@@ -36,13 +36,25 @@ unit curl.http.session.property_modules.header;
 interface
 
 uses
-  curl.session.property_modules.header;
+  curl.session.property_modules.proxy;
 
 type
-  TModuleHeader = class(curl.session.property_modules.header.TModuleHeader)
+  TModuleProxy = class(curl.session.property_modules.proxy.TModuleProxy)
   public
-    { Set callback that receives header data. }
-    property HeaderCallback;   
+    { Set proxy to use. }
+    property Url;
+
+    { Port number the proxy listens on. }
+    property Port;
+
+    { Proxy protocol type. }
+    property ProxyType;
+
+    { Set pre-proxy to use. }
+    property PreProxy;
+
+    { Tunnel through HTTP proxy. }
+    property HTTPProxyTunnel;
   end;
 
 implementation

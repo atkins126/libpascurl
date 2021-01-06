@@ -24,7 +24,7 @@
 (*                                                                            *)
 (******************************************************************************)
 
-unit curl.http.session.property_modules.header;
+unit curl.http.session.property_modules.reader;
 
 {$IFDEF FPC}
   {$mode objfpc}{$H+}
@@ -36,13 +36,19 @@ unit curl.http.session.property_modules.header;
 interface
 
 uses
-  curl.session.property_modules.header;
+  curl.session.property_modules.reader;
 
 type
-  TModuleHeader = class(curl.session.property_modules.header.TModuleHeader)
+  TModuleReader = class(curl.session.property_modules.reader.TModuleReader)
   public
-    { Set callback that receives header data. }
-    property HeaderCallback;   
+    { Set preferred receive buffer size. }
+    property BufferSize;
+
+    { Read callback for data uploads. }
+    property UploadCallback;
+
+    { Callback for seeking in input stream. }
+    property SeekCallback;
   end;
 
 implementation

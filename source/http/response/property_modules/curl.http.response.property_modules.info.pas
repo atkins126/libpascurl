@@ -24,7 +24,7 @@
 (*                                                                            *)
 (******************************************************************************)
 
-unit curl.http.session.property_modules.header;
+unit curl.http.response.property_modules.info;
 
 {$IFDEF FPC}
   {$mode objfpc}{$H+}
@@ -36,13 +36,35 @@ unit curl.http.session.property_modules.header;
 interface
 
 uses
-  curl.session.property_modules.header;
+  curl.response.property_modules.info;
 
 type
-  TModuleHeader = class(curl.session.property_modules.header.TModuleHeader)
+  TModuleInfo = class(curl.response.property_modules.info.TModuleInfo)
   public
-    { Set callback that receives header data. }
-    property HeaderCallback;   
+    { Receive how many new connections libcurl had to create to achieve the 
+      previous transfer. }
+    property ConnectionsCount;
+
+    { Receive the IP address of the recent connection done. }
+    property ConnectedIP;
+
+    { Receive the destination port of the recent connection done. }
+    property ConnectedPort;
+
+    { Receive the string holding the IP address of the local end of recent 
+      connection done. }
+    property LocalIP;
+
+    { Receive the local port number of the recent connection done. }
+    property LocalPort;
+
+    { Receive the last socket used by this session. If the socket is no longer 
+      valid, -1 is returned. }
+    property LastSocket;
+
+    { Receive the recently active socket used for the transfer connection by 
+      this session. If the socket is no longer valid, -1 is returned. }
+    property ActiveSocket;
   end;
 
 implementation

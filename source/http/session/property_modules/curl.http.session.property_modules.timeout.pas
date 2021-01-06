@@ -24,7 +24,7 @@
 (*                                                                            *)
 (******************************************************************************)
 
-unit curl.http.session.property_modules.header;
+unit curl.http.session.property_modules.timeout;
 
 {$IFDEF FPC}
   {$mode objfpc}{$H+}
@@ -36,15 +36,29 @@ unit curl.http.session.property_modules.header;
 interface
 
 uses
-  curl.session.property_modules.header;
+  libpascurl, curl.session.property_module, utils.timeinterval;
 
 type
-  TModuleHeader = class(curl.session.property_modules.header.TModuleHeader)
+  TModuleTimeout = class(curl.session.property_module.TPropertyModule)
+  protected
+    { Timeout for Expect: 100-continue response. }
+    procedure SetContinueResponse (ATimeout : TTimeInterval);
   public
-    { Set callback that receives header data. }
-    property HeaderCallback;   
+    { Timeout for Expect: 100-continue response. 
+      Tell libcurl the time to wait for a server response with the HTTP status 
+      100 (Continue), 417 (Expectation Failed) or similar after sending an HTTP 
+      request containing an Expect: 100-continue header. If this times out 
+      before a response is received, the request body is sent anyway. }
+    property ContinueResponse : TTimeInterval write SetContinueResponse;
   end;
 
 implementation
+
+{ TModuleTimeout }
+
+procedure TModuleTimeout.SetContinueResponse (ATimeout : TTimeInterval);
+begin
+  Option(CURLOPT_EXPECT_100_TIMEOUT_MS, ATimeout.Milliseconds);
+end;
 
 end.

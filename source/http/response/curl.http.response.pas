@@ -1,6 +1,6 @@
 (******************************************************************************)
 (*                                 libPasCURL                                 *)
-(*                 object pascal wrapper around cURL library                  *)
+(*            delphi and object pascal wrapper around cURL library            *)
 (*                        https://github.com/curl/curl                        *)
 (*                                                                            *)
 (* Copyright (c) 2020                                       Ivan Semenkov     *)
@@ -26,7 +26,9 @@
 
 unit curl.http.response;
 
-{$mode objfpc}{$H+}
+{$IFDEF FPC}
+  {$mode objfpc}{$H+}
+{$ENDIF}
 {$IFOPT D+}
   {$DEFINE DEBUG}
 {$ENDIF}
@@ -34,15 +36,16 @@ unit curl.http.response;
 interface
 
 uses
-  SysUtils, libpascurl, curl.utils.errors_stack,  curl.response,
-  curl.utils.headers_list, curl.utils.cookies_list,
+  SysUtils, libpascurl, container.memorybuffer, curl.utils.errors_stack,
+  curl.response, curl.utils.headers_list, curl.utils.cookies_list,
   curl.http.response.property_modules.content,
   curl.http.response.property_modules.timeout,
   curl.http.response.property_modules.redirect,
   curl.http.response.property_modules.header,
   curl.http.response.property_modules.speed,
   curl.http.response.property_modules.request,
-  curl.http.response.property_modules.cookie;
+  curl.http.response.property_modules.cookie,
+  curl.http.response.property_modules.info;
 
 type
   TResponse = class(curl.response.TResponse)
@@ -55,6 +58,7 @@ type
     FHeadersList : PHeadersList;
     FCookiesList : TCookiesList;
 
+    FInfo : TModuleInfo;
     FContent : TModuleContent;
     FTimeout : TModuleTimeout;
     FRedirect : TModuleRedirect;
@@ -81,6 +85,9 @@ type
 
     { Get cookies list. }
     property CookiesList : TCookiesList read GetCookies;
+
+    { Get session info. }
+    property Info : TModuleInfo read FInfo;
 
     { Get headers info. }
     property Header : TModuleHeader read FHeader;
@@ -115,6 +122,7 @@ begin
   FHeadersList := AHeadersList;
   FCookiesList := TCookiesList.Create;
 
+  FInfo := TModuleInfo.Create(Handle, ErrorsStorage);
   FContent := TModuleContent.Create(Handle, ErrorsStorage, MemoryBuffer);
   FTimeout := TModuleTimeout.Create(Handle, ErrorsStorage);
   FRedirect := TModuleRedirect.Create(Handle, ErrorsStorage);
@@ -126,6 +134,7 @@ end;
 
 destructor TResponse.Destroy;
 begin
+  FreeAndNil(FInfo);
   FreeAndNil(FContent);
   FreeAndNil(FTimeout);
   FreeAndNil(FRedirect);

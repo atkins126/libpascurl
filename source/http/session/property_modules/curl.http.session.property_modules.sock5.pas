@@ -24,7 +24,7 @@
 (*                                                                            *)
 (******************************************************************************)
 
-unit curl.http.session.property_modules.header;
+unit curl.http.session.property_modules.sock5;
 
 {$IFDEF FPC}
   {$mode objfpc}{$H+}
@@ -36,13 +36,23 @@ unit curl.http.session.property_modules.header;
 interface
 
 uses
-  curl.session.property_modules.header;
+  curl.session.property_modules.sock5;
 
 type
-  TModuleHeader = class(curl.session.property_modules.header.TModuleHeader)
+  TModuleSock5 = class(curl.session.property_modules.sock5)
   public
-    { Set callback that receives header data. }
-    property HeaderCallback;   
+    { Tell libcurl which authentication method(s) are allowed for SOCKS5 
+      proxy authentication. }
+    property AuthType;
+
+    { Proxy authentication service name. }
+    property GSSAPIServiceName;
+
+    { As part of the gssapi negotiation a protection mode is negotiated. 
+      The RFC 1961 says in section 4.3/4.4 it should be protected, but the 
+      NEC reference implementation does not. If enabled, this option allows 
+      the unprotected exchange of the protection mode negotiation. }
+    property GSSAPIProtection;
   end;
 
 implementation

@@ -24,7 +24,7 @@
 (*                                                                            *)
 (******************************************************************************)
 
-unit curl.http.session.property_modules.header;
+unit curl.http.session.property_modules.http2;
 
 {$IFDEF FPC}
   {$mode objfpc}{$H+}
@@ -36,15 +36,30 @@ unit curl.http.session.property_modules.header;
 interface
 
 uses
-  curl.session.property_modules.header;
+  libpascurl, curl.session.property_module;
 
 type
-  TModuleHeader = class(curl.session.property_modules.header.TModuleHeader)
+  TModuleHTTP2 = class(curl.session.property_module.TPropertyModule)
   public
-    { Set callback that receives header data. }
-    property HeaderCallback;   
+    type
+      TStreamWeight = 1 .. 256;
+  protected
+    { Set numerical stream weight. }
+    procedure SetStreamWeight (AWeight : TStreamWeight); 
+  public
+    { Set numerical stream weight. 
+      When using HTTP/2, this option sets the individual weight for this 
+      particular stream used by the easy handle. }
+    property StreamWeight : TStreamWeight write SetStreamWeight default 16;   
   end;
 
 implementation
+
+{ TModuleHTTP2 }
+
+procedure TModuleHTTP2.SetStreamWeight (AWeight : TStreamWeight);
+begin
+  Option(CURLOPT_STREAM_WEIGHT, Longint(AWeight));
+end;
 
 end.

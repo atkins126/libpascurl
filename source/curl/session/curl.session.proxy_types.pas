@@ -24,7 +24,7 @@
 (*                                                                            *)
 (******************************************************************************)
 
-unit curl.http.session.property_modules.header;
+unit curl.session.proxy_types;
 
 {$IFDEF FPC}
   {$mode objfpc}{$H+}
@@ -35,15 +35,31 @@ unit curl.http.session.property_modules.header;
 
 interface
 
-uses
-  curl.session.property_modules.header;
-
 type
-  TModuleHeader = class(curl.session.property_modules.header.TModuleHeader)
-  public
-    { Set callback that receives header data. }
-    property HeaderCallback;   
-  end;
+  TProxyType = (
+    { HTTP Proxy. Default. } 
+    PROXY_TYPE_HTTP,
+
+    { HTTPS Proxy. }
+    PROXY_TYPE_HTTPS,
+
+    { HTTP 1.0 Proxy. This is very similar to CURLPROXY_HTTP except it uses 
+      HTTP/1.0 for any CONNECT tunnelling. It does not change the HTTP version 
+      of the actual HTTP requests. }
+    PROXY_TYPE_HTTP_1_0,
+
+    { SOCKS4 Proxy. }
+    PROXY_TYPE_SOCKS4,
+
+    { SOCKS4a Proxy. Proxy resolves URL hostname. }
+    PROXY_TYPE_SOCKS4A,
+
+    { SOCKS5 Proxy. }
+    PROXY_TYPE_SOCK5,
+
+    { SOCKS5 Proxy. Proxy resolves URL hostname. }
+    PROXY_TYPE_SOCKS5_HOSTNAME
+  );
 
 implementation
 

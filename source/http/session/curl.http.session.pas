@@ -1,6 +1,6 @@
 (******************************************************************************)
 (*                                 libPasCURL                                 *)
-(*                 object pascal wrapper around cURL library                  *)
+(*            delphi and object pascal wrapper around cURL library            *)
 (*                        https://github.com/curl/curl                        *)
 (*                                                                            *)
 (* Copyright (c) 2020                                       Ivan Semenkov     *)
@@ -26,7 +26,9 @@
 
 unit curl.http.session;
 
-{$mode objfpc}{$H+}
+{$IFDEF FPC}
+  {$mode objfpc}{$H+}
+{$ENDIF}
 {$IFOPT D+}
   {$DEFINE DEBUG}
 {$ENDIF}
@@ -46,7 +48,10 @@ uses
   curl.http.session.property_modules.tcp,
   curl.http.session.property_modules.cookie,
   curl.http.session.property_modules.auth,
-  curl.http.session.property_modules.tls_auth;
+  curl.http.session.property_modules.tls_auth,
+  curl.http.session.property_modules.http2,
+  curl.http.session.property_modules.proxy,
+  curl.http.session.property_modules.reader;
 
 type
   THTTP = class
@@ -68,6 +73,9 @@ type
         FCookie : TModuleCookie;
         FAuth : TModuleAuth;
         FTLSAuth : TModuleTLSAuth;
+        FHTTP2 : TModuleHTTP2;
+        FProxy : TModuleProxy;
+        FReader : TModuleReader;
 
         { Request failure on HTTP response >= 400. }
         procedure SetFailOnError (AFail : Boolean);
@@ -103,6 +111,9 @@ type
         { Get download writer object. }
         property Download : TModuleWriter read FWriter;
 
+        { Get upload reader object. }
+        property Upload : TModuleReader read FReader;
+
         { Set options. }
         property Options : TModuleOptions read FOptions;
 
@@ -123,6 +134,12 @@ type
 
         { Set TLS auth properties. }
         property TLSAuth : TModuleTLSAuth read FTLSAuth;
+
+        { Set HTTP/2 protocol properties. }
+        property HTTP2 : TModuleHTTP2 read FHTTP2;
+
+        { Set proxy properties. }
+        property Proxy : TModuleProxy read FProxy;
 
         { Send current request using GET method. }
         function Get : TResponse;
@@ -152,6 +169,9 @@ begin
   FCookie := TModuleCookie.Create(Handle, ErrorsStorage);
   FAuth := TModuleAuth.Create(Handle, ErrorsStorage);
   FTLSAuth := TModuleTLSAuth.Create(Handle, ErrorsStorage);
+  FHTTP2 := TModuleHTTP2.Create(Handle, ErrorsStorage);
+  FProxy := TModuleProxy.Create(Handle, ErrorsStorage);
+  FReader := TModuleReader.Create(Handle, ErrorsStorage, MemoryBuffer);
   
   FProtocols.Allowed := [PROTOCOL_HTTP, PROTOCOL_HTTPS];
   FProtocols.AllowedRedirects := [PROTOCOL_HTTP, PROTOCOL_HTTPS];
@@ -172,6 +192,9 @@ begin
   FreeAndNil(FCookie);
   FreeAndNil(FAuth);
   FreeAndNil(FTLSAuth);
+  FreeAndNil(FHTTP2);
+  FreeAndNil(FProxy);
+  FreeAndNil(FReader);
 
   inherited Destroy;
 end;
@@ -179,6 +202,8 @@ end;
 function THTTP.TSession.Get : TResponse;
 begin
   FRequest.Method := TMethod.GET;
+  FReader.InitUpload;
+  
   Result := TResponse.Create(Handle, ErrorsStorage, MemoryBuffer, 
     @FHeadersList);
 end;
